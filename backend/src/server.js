@@ -1,31 +1,45 @@
-// const express = require("express"); -> commonJs (CJS)
+// -------------------- Imports --------------------
 
-import express from "express";  // -> ES Module (ESM) -> for this mark the type:"module" or make the file extension as .mjs
-const app = express();
+// CommonJS vs ES Modules
+// const express = require("express");   // -> CommonJS (CJS)
+import express from "express";           // -> ES Module (ESM) 
+                                         // for this: add "type": "module" in package.json OR use .mjs extension
 
-//Setting up .env file configuration so that we can use the .env file variable
-import dotenv from "dotenv";
-dotenv.config();
-
+import dotenv from "dotenv";             // For environment variables
+import path from "path";                 // For file paths
 import authRoute from "./routes/auth.route.js";
-import messageRoute from "./routes/message.route.js"
+import messageRoute from "./routes/message.route.js";
+import { connectDB } from "./lib/db.js";
 
+// -------------------- App Setup --------------------
 
+dotenv.config();                         // Load .env variables
+
+const app = express();
+const __dirname = path.resolve();        // Required for ESM (since __dirname is not available by default)
+
+// -------------------- Routes --------------------
+app.use(express.json()); //req.body
 app.use("/api/auth", authRoute);
 app.use("/api/messages", messageRoute);
 
-import path from "path";
-const __dirname = path.resolve();  //use in module JS
+// -------------------- Production Setup --------------------
 
-if(process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../frontend/dist")));
+if (process.env.NODE_ENV === "production") {
+  // Serve frontend build files
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-    app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
-    })
+  // Fallback to index.html for SPA routing
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
 }
 
+// -------------------- Start Server --------------------
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
+
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server started on port ${PORT}`);
+  connectDB();
 });
