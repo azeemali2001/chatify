@@ -10,6 +10,7 @@ import authRoute from "./routes/auth.route.js";
 import messageRoute from "./routes/message.route.js";
 import { connectDB } from "./lib/db.js";
 import { ENV } from "./lib/env.js";
+import cookieParser from "cookie-parser";
 
 // -------------------- App Setup --------------------
 
@@ -20,6 +21,7 @@ const __dirname = path.resolve();        // Required for ESM (since __dirname is
 
 // -------------------- Routes --------------------
 app.use(express.json()); //req.body
+app.use(cookieParser()); //req.cookies
 app.use("/api/auth", authRoute);
 app.use("/api/messages", messageRoute);
 
