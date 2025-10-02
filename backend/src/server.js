@@ -6,6 +6,7 @@ import express from "express";           // -> ES Module (ESM)
                                          // for this: add "type": "module" in package.json OR use .mjs extension
 
 import path from "path";                 // For file paths
+import cors from "cors"
 import authRoute from "./routes/auth.route.js";
 import messageRoute from "./routes/message.route.js";
 import { connectDB } from "./lib/db.js";
@@ -21,6 +22,7 @@ const __dirname = path.resolve();        // Required for ESM (since __dirname is
 
 // -------------------- Routes --------------------
 app.use(express.json()); //req.body
+app.use(cors({origin:ENV.CLIENT_URL, credentials : true}));
 app.use(cookieParser()); //req.cookies
 app.use("/api/auth", authRoute);
 app.use("/api/messages", messageRoute);
